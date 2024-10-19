@@ -1,0 +1,15 @@
+# Ignore environment variables
+#.env
+
+# Ignore all image files
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.svg
+*.webp
+
+# Ignore all json files
+*.json
