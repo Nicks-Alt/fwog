@@ -1,15 +1,15 @@
 const { SlashCommandBuilder, ChannelType } = require('discord.js');
 const fs = require('fs');
-
+const variableManager = require('../../variableManager')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('setreactionrole')
         .setDescription('Assign a role when a specific emoji is reacted to a message.')
-        .addChannelOption(option =>
-            option.setName('channel')
-                .setDescription('The channel of the message')
-                .setRequired(true)
-                .addChannelTypes(ChannelType.GuildText)) // Specify channel type
+        // .addChannelOption(option =>
+        //     option.setName('channel')
+        //         .setDescription('The channel of the message')
+        //         .setRequired(true)
+        //         .addChannelTypes(ChannelType.GuildText)) // Specify channel type
         .addStringOption(option =>
             option.setName('message_id')
                 .setDescription('The ID of the message to react to')
@@ -23,7 +23,7 @@ module.exports = {
                 .setDescription('The role to assign')
                 .setRequired(true)),
     async execute(interaction) {
-        const channel = interaction.options.getChannel('channel');
+        const channel = await interaction.guild.channels.fetch(interaction.channelId);//guild.channels.cache.get(interaction.channelId);//interaction.options.getChannel('channel');
         const messageId = interaction.options.getString('message_id');
         const emoji = interaction.options.getString('emoji');
         const roleId = interaction.options.getRole('role').id;
@@ -67,10 +67,9 @@ module.exports = {
             emoji: emoji,
             roleId: roleId
         });
-
         // Save the updated data back to the JSON file
         fs.writeFileSync(dataFile, JSON.stringify(reactionRoles, null, 4));
-
+        variableManager.setVariable(reactionRoles);
         return interaction.reply({ content: 'Reaction role set up successfully!', ephemeral: true });
     },
 };

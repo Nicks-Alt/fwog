@@ -82,4 +82,5 @@ const saveReactionRoles = (array) => {
         console.error('Error writing reaction roles file:', error);
     }
 };
+
 module.exports = { updateEnv, loadReactionRoles, saveReactionRoles, getReactionRoles };

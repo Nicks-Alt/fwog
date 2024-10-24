@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 require('dotenv').config();
 const { updateEnv } = require('../../utils.js')
+const exec = require('child_process').exec
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,7 +14,6 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction, user) {
         const channel = interaction.options.get('channel').channel;
-        console.log(interaction.member);
         updateEnv('BOT_COMMANDS_CHANNEL', channel.id);
         await interaction.reply(`Bot commands channel set to: <#${channel.id}>.`);
         console.log(`${interaction.member.user.globalName} ran /setbotchannel. New bot channel: <#${channel.id}>.`);

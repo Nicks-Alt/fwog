@@ -1,10 +1,12 @@
 // ================================ Global Variables ===============================
 require('dotenv').config(); //initializes dotenv
 const { Client, Intents, GatewayIntentBits, Routes, REST, Events, Collection, PermissionFlagsBits } = require('discord.js');
-const axios = require('axios');
+const axios = require('axios'); // for twitch API queries
 const fs = require('fs'); // allows us to use the filestream
 const path = require('path'); // allows us to combine file paths easy
-const { updateEnv } = require('./utils');
+const { updateEnv } = require('./utils'); // updates environment variable file
+const exec = require('child_process').exec; // allows use of npm scripts
+const variableManager = require('./variableManager'); // for accessing reaction role data
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMembers] }); // init client with intents
 // =================================================================================
 
@@ -16,14 +18,31 @@ if (fs.existsSync(dataFile)) {
     reactionRoles = JSON.parse(fileData);
 }
 
+if (!fs.existsSync('./.env')) {
+	console.warn('No env file found. Creating...');
+	fs.writeFileSync('./.env',
+	'CLIENT_TOKEN=\nGUILD_ID=\nCLIENT_ID=1296571395303673907\nBOT_COMMANDS_CHANNEL=\nTWITCH_CLIENT_ID=kyw23aof869yes25gj56edkmxna08l\nTWITCH_CLIENT_SECRET=4tqusid3sii2j0hsfm7lflexztn8hp\nTWITCH_USERNAME=\nTWITCH_ANNOUNCEMENT_CHANNEL=\n')
+	
+}
+
 client.once('ready', async client => {
-	console.log(`Ready! Logged in as ${client.user.tag}`);
-	console.warn(`Setting up reaction roles...`)
+	
+	console.warn(`Setting up reaction roles...`);
 	await setupReactionRoles();
-	if (channelId) {
+	if (channelId && twitchUsername) {
 		checkLiveStatus();
 		setInterval(checkLiveStatus, 60000);
-	}; // if bot is retarded
+	};
+	client.guilds.cache.forEach(guild => {
+		updateEnv('GUILD_ID', guild.id);
+	})
+	console.log('Starting command registering...');
+	exec('npm run regcmds', (error) => {
+		if (error) {
+			console.error(`Error registering commands: ${error.message}`);
+		}
+	});
+	console.log(`Ready! Logged in as ${client.user.tag}`);
 })
 client.on('guildCreate', async guild => {
 	updateEnv('GUILD_ID', guild.id);
@@ -65,7 +84,7 @@ client.on('messageReactionAdd', async (reaction, user) => {
 
             if (member && role) {
                 await member.roles.add(role);
-                console.log(`Assigned role ${role.name} to ${member.user.tag}`);
+                console.log(`[Reaction Roles] Assigned role ${role.name} to ${member.user.tag}`);
             } else {
                 console.log('Member or role not found');
     	}
@@ -93,7 +112,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
 
 					if (member && role) {
 						await member.roles.remove(role);
-						console.log(`Removed role ${role.name} from ${member.user.tag}`);
+						console.log(`[Reaction Roles] Removed role ${role.name} from ${member.user.tag}`);
 					} else {
 						console.log('Member or role not found');
 					}
@@ -103,6 +122,13 @@ client.on('messageReactionRemove', async (reaction, user) => {
 				
 			}
 });
+// Event listener for reactionRoles being updated
+variableManager.on('variableUpdated', (newValue) => {
+	console.log(`Added a reaction role.`);
+	reactionRoles = variableManager.getVariable();
+})
+
+
 // Function to fetch messages and set up reactions
 async function setupReactionRoles() {
     for (const roleData of reactionRoles.roles) {

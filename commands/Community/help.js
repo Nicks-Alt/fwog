@@ -20,7 +20,6 @@ module.exports = {
             .setTimestamp()
             .setFooter({ text: '/help' , iconURL: interaction.client.user.displayAvatarURL({dynamic: true, size: 1024}) })
         commands.forEach(command => {
-            console.log(interaction.member.permissions);
             if (command.default_member_permissions === null) // all reg commands
                 embed.addFields({name: `/${command.name}`, value: command.description, inline: false});
             else if (interaction.member.permissions.has(PermissionFlagsBits.Administrator)){
