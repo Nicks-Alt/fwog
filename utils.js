@@ -17,4 +17,4 @@ function updateEnv(key, value) {
     console.log(`Updated ${key} in .env file`);
 }
 
-module.exports = { updateEnv, loadReactionRoles, saveReactionRoles, getReactionRoles };
+module.exports = { updateEnv };
