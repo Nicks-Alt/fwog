@@ -10,7 +10,7 @@ module.exports = {
         .setDescription('Sets the channel for butter to randomly speak in i guess?')
         .addChannelOption(option => 
             option.setName('channel')
-                .setDescription('The channel to use commands in.')
+                .setDescription('The channel for butter to watch pspspsps and papasch.')
                 .setRequired(true)),
     async execute(interaction) {
         const channel = interaction.options.get('channel').channel;
