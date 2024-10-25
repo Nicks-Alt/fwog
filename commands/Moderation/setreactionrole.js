@@ -1,15 +1,11 @@
-const { SlashCommandBuilder, ChannelType } = require('discord.js');
+const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('discord.js');
 const fs = require('fs');
 const variableManager = require('../../variableManager')
 module.exports = {
     data: new SlashCommandBuilder()
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
         .setName('setreactionrole')
         .setDescription('Assign a role when a specific emoji is reacted to a message.')
-        // .addChannelOption(option =>
-        //     option.setName('channel')
-        //         .setDescription('The channel of the message')
-        //         .setRequired(true)
-        //         .addChannelTypes(ChannelType.GuildText)) // Specify channel type
         .addStringOption(option =>
             option.setName('message_id')
                 .setDescription('The ID of the message to react to')
