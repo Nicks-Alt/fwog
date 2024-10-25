@@ -12,4 +12,4 @@
 *.webp
 
 # Ignore all json files
-*.json
+reactionRoles.json
