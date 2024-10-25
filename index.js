@@ -33,7 +33,7 @@ client.once('ready', async client => {
 		checkLiveStatus();
 		setInterval(checkLiveStatus, 60000);
 	};
-	client.guilds.cache.forEach(guild => {
+	client.guilds.cache.forEach(guild => { // maybe make into a list?
 		updateEnv('GUILD_ID', guild.id);
 	})
 	console.log('Starting command registering...');
@@ -45,10 +45,6 @@ client.once('ready', async client => {
 	if (process.env.GENERAL_CHAT)
 		setInterval(doButterStuff, 21600000);
 	console.log(`Ready! Logged in as ${client.user.tag}`);
-})
-client.on('guildCreate', async guild => {
-	updateEnv('GUILD_ID', guild.id);
-    console.log(`Joined a new guild: ${guild.name} (ID: ${guild.id})`);
 })
 // Event listener for interactions
 client.on('interactionCreate', async interaction => {
@@ -68,6 +64,7 @@ client.on('interactionCreate', async interaction => {
 		}
 			await command.execute(interaction);
 });
+// Event listener for butter to reply to messages (not commands)
 client.on('messageCreate', async (message) => {
 	if (message.author.bot) return;
 	if (message.content.includes('pspspsps') || message.content.includes('papasch')){
@@ -182,12 +179,11 @@ for (const folder of commandFolders) {
 const twitchClientId = process.env.TWITCH_CLIENT_ID;
 const twitchClientSecret = process.env.TWITCH_CLIENT_SECRET;
 let twitchUsername = process.env.TWITCH_USERNAME;
-
 let channelId = process.env.TWITCH_ANNOUNCEMENT_CHANNEL;
-
 let accessToken = '';
 let wasLive = false; // Track the previous live status
 
+// Retrieve access token from twitch
 async function getTwitchAccessToken() {
     console.log("Attempting to get access token...")
     const response = await axios.post('https://id.twitch.tv/oauth2/token', null, {
@@ -200,7 +196,7 @@ async function getTwitchAccessToken() {
     console.log("Twitch access token retrieved!")
     return response.data.access_token;
 }
-
+// Is the streamer live??
 async function isStreamerLive() {
     if (!accessToken) {
         accessToken = await getTwitchAccessToken();
@@ -214,7 +210,7 @@ async function isStreamerLive() {
     });
     return response.data.data.length > 0; // Returns true if live
 }
-
+// Checks the twitch streamer's live status
 async function checkLiveStatus() {
 	if (channelId !== process.env.TWITCH_ANNOUNCEMENT_CHANNEL) // in case /setstreamchannel is ran
 		wasLive = false;
@@ -238,6 +234,8 @@ async function checkLiveStatus() {
         wasLive = false; // Update the status
     }
 }
+
+// This doesnt belong here, but its for butter to say shit every x hours
 async function doButterStuff() {
 	let guild = client.guilds.cache.get(process.env.GUILD_ID);
 	const defaultChannel = guild.channels.cache.get(process.env.GENERAL_CHAT);
