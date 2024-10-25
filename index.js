@@ -7,7 +7,7 @@ const path = require('path'); // allows us to combine file paths easy
 const { updateEnv } = require('./utils'); // updates environment variable file
 const exec = require('child_process').exec; // allows use of npm scripts
 const variableManager = require('./variableManager'); // for accessing reaction role data
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMembers] }); // init client with intents
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions, GatewayIntentBits.GuildMembers, GatewayIntentBits.MessageContent] }); // init client with intents
 // =================================================================================
 
 // =================================== Events ==================================
@@ -21,7 +21,7 @@ if (fs.existsSync(dataFile)) {
 if (!fs.existsSync('./.env')) {
 	console.warn('No env file found. Creating...');
 	fs.writeFileSync('./.env',
-	'CLIENT_TOKEN=\nGUILD_ID=\nCLIENT_ID=1296571395303673907\nBOT_COMMANDS_CHANNEL=\nTWITCH_CLIENT_ID=kyw23aof869yes25gj56edkmxna08l\nTWITCH_CLIENT_SECRET=4tqusid3sii2j0hsfm7lflexztn8hp\nTWITCH_USERNAME=\nTWITCH_ANNOUNCEMENT_CHANNEL=\n')
+	'CLIENT_TOKEN=\nGUILD_ID=\nCLIENT_ID=1296571395303673907\nBOT_COMMANDS_CHANNEL=\nTWITCH_CLIENT_ID=kyw23aof869yes25gj56edkmxna08l\nTWITCH_CLIENT_SECRET=4tqusid3sii2j0hsfm7lflexztn8hp\nTWITCH_USERNAME=\nTWITCH_ANNOUNCEMENT_CHANNEL=\nGENERAL_CHAT=')
 	
 }
 
@@ -42,6 +42,8 @@ client.once('ready', async client => {
 			console.error(`Error registering commands: ${error.message}`);
 		}
 	});
+	if (process.env.GENERAL_CHAT)
+		setInterval(doButterStuff, 21600000);
 	console.log(`Ready! Logged in as ${client.user.tag}`);
 })
 client.on('guildCreate', async guild => {
@@ -66,7 +68,13 @@ client.on('interactionCreate', async interaction => {
 		}
 			await command.execute(interaction);
 });
-
+client.on('messageCreate', async (message) => {
+	if (message.author.bot) return;
+	if (message.content.includes('pspspsps') || message.content.includes('papasch')){
+		let randomCatMessages = ['meow', 'ᵐᵉᵒʷ', 'ฅ^•ﻌ•^ฅ', '=＾● ⋏ ●＾=', '(˃ᆺ˂)', '(=^ ◡ ^=)', '(=^･ω･^=)', 'pspspsps'];
+		message.reply(`${randomCatMessages[(Math.floor(Math.floor(Math.random() * 8) + 1)) - 1]}`)
+	}
+})
 // Event listener for message reactions
 client.on('messageReactionAdd', async (reaction, user) => {
     if (user.bot) return; // Ignore bot reactions
@@ -229,6 +237,16 @@ async function checkLiveStatus() {
         });
         wasLive = false; // Update the status
     }
+}
+async function doButterStuff() {
+	let guild = client.guilds.cache.get(process.env.GUILD_ID);
+	const defaultChannel = guild.channels.cache.get(process.env.GENERAL_CHAT);
+	const rest = new REST({ version: '10' }).setToken(process.env.CLIENT_TOKEN);
+    let randomCatMessages = ['meow', 'ᵐᵉᵒʷ', 'ฅ^•ﻌ•^ฅ', '=＾● ⋏ ●＾=', '(˃ᆺ˂)', '(=^ ◡ ^=)', '(=^･ω･^=)', 'pspspsps'];
+	await rest.post(Routes.channelMessages(defaultChannel.id), {
+        body: {
+            content: `${randomCatMessages[(Math.floor(Math.floor(Math.random() * 8) + 1)) - 1]}`,
+        }})
 }
 // =================================================================================
 client.login(process.env.CLIENT_TOKEN); //signs the bot in with token
