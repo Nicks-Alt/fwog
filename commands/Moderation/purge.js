@@ -18,7 +18,7 @@ module.exports = {
         }
 
         await interaction.channel.bulkDelete(numMessages);
-        await interaction.reply(`${numMessages} messages deleted`);
+        await interaction.reply({content: `${numMessages} messages deleted`, ephemeral: true});
         console.log(`${numMessages} messages deleted using /purge by ${interaction.member.displayName} (${interaction.member.user.username})`);
     }
 }

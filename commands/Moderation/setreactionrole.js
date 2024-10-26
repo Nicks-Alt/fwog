@@ -19,7 +19,7 @@ module.exports = {
                 .setDescription('The role to assign')
                 .setRequired(true)),
     async execute(interaction) {
-        const channel = await interaction.guild.channels.fetch(interaction.channelId);//guild.channels.cache.get(interaction.channelId);//interaction.options.getChannel('channel');
+        const channel = await interaction.guild.channels.fetch(interaction.channelId);
         const messageId = interaction.options.getString('message_id');
         const emoji = interaction.options.getString('emoji');
         const roleId = interaction.options.getRole('role').id;
@@ -65,7 +65,7 @@ module.exports = {
         });
         // Save the updated data back to the JSON file
         fs.writeFileSync(dataFile, JSON.stringify(reactionRoles, null, 4));
-        variableManager.setVariable(reactionRoles);
+        variableManager.setReactionRoles(reactionRoles);
         return interaction.reply({ content: 'Reaction role set up successfully!', ephemeral: true });
     },
 };

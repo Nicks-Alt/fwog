@@ -2,16 +2,16 @@ const EventEmitter = require('events');
 class VariableManager extends EventEmitter {
     constructor() {
         super();
-        this.variable = null; // The shared variable
+        this.reactionRoles = null;
     }
 
-    getVariable() {
-        return this.variable;
+    getReactionRoles() {
+        return this.reactionRoles;
     }
 
-    setVariable(newValue) {
-        this.variable = newValue;
-        this.emit('variableUpdated', this.variable); // Emit an event when the variable is updated
+    setReactionRoles(newValue) {
+        this.reactionRoles = newValue;
+        this.emit('reactionRolesUpdated', this.reactionRoles); // Emit an event when data is updated
     }
 }
 

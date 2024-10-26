@@ -7,7 +7,7 @@ module.exports = {
         .setName('restart')
         .setDescription('Restarts the bot'),
     async execute(interaction) {
-        await interaction.reply(`Restarting the bot.`);
+        await interaction.reply({content: `Restarting the bot.`, ephemeral: true});
         console.log(__dirname);
         exec(`cd ../..`);
         exec(`node index.js`, (error) => {

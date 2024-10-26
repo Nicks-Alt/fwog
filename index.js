@@ -1,5 +1,6 @@
 // ================================ Global Variables ===============================
-require('dotenv').config(); //initializes dotenv
+const dotenv = require('dotenv'); //initializes dotenv
+dotenv.config();
 const { Client, Intents, GatewayIntentBits, Routes, REST, Events, Collection, PermissionFlagsBits } = require('discord.js');
 const axios = require('axios'); // for twitch API queries
 const fs = require('fs'); // allows us to use the filestream
@@ -128,9 +129,9 @@ client.on('messageReactionRemove', async (reaction, user) => {
 			}
 });
 // Event listener for reactionRoles being updated
-variableManager.on('variableUpdated', (newValue) => {
+variableManager.on('reactionRolesUpdated', () => {
 	console.log(`Added a reaction role.`);
-	reactionRoles = variableManager.getVariable();
+	reactionRoles = variableManager.getReactionRoles();
 })
 
 
@@ -152,6 +153,16 @@ async function setupReactionRoles() {
         }
     }
 }
+
+fs.watch(path.resolve(__dirname, '.env'), (eventType, filename) => {
+	if (eventType === 'change'){
+		dotenv.config({override: true})
+	}
+})
+
+client.on('guildCreate', (guild) => {
+	updateEnv('GUILD_ID', guild.id);
+})
 // =================================================================================
 
 // ================================ Command Loading ================================
@@ -243,7 +254,7 @@ async function doButterStuff() {
     let randomCatMessages = ['meow', 'ᵐᵉᵒʷ', 'ฅ^•ﻌ•^ฅ', '=＾● ⋏ ●＾=', '(˃ᆺ˂)', '(=^ ◡ ^=)', '(=^･ω･^=)', 'pspspsps'];
 	await rest.post(Routes.channelMessages(defaultChannel.id), {
         body: {
-            content: `${randomCatMessages[(Math.floor(Math.floor(Math.random() * 8) + 1)) - 1]}`,
+            content: `${randomCatMessages[(Math.floor(Math.floor(Math.random() * 8) + 1)) - 1]}`, // dont ask. stackoverflow got me
         }})
 }
 // =================================================================================

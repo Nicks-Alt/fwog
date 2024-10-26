@@ -1,7 +1,6 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 require('dotenv').config();
 const { updateEnv } = require('../../utils.js')
-const exec = require('child_process').exec
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,14 +14,7 @@ module.exports = {
     async execute(interaction, user) {
         const channel = interaction.options.get('channel').channel;
         updateEnv('BOT_COMMANDS_CHANNEL', channel.id);
-        await interaction.reply(`Bot commands channel set to: <#${channel.id}>.`);
+        await interaction.reply({content: `Bot commands channel set to: <#${channel.id}>.`, ephemeral: true});
         console.log(`${interaction.member.user.globalName} ran /setbotchannel. New bot channel: <#${channel.id}>.`);
-        await interaction.followUp(`Restarting the bot to initiate changes...`)
-        exec('npm run restart', (error) => {
-            if (error) {
-                console.error(`Error restarting bot: ${error.message}`);
-            }
-        });
-        process.exit(1); // Exit the current process
     }
 }
